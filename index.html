@@ -37,7 +37,6 @@ d3.request("data/Thailand_provinces_mk-from-gif.tiff").responseType("arraybuffer
       values2.push(values[i + n*j]);
     }
   }
-  console.log(d3.extent(values));
 
   var color = d3.scaleOrdinal(["white"].concat(d3.schemePastel2)) //d3.scaleSequential(d3.interpolateMagma)
       .domain(d3.extent(values));
