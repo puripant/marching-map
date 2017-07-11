@@ -15,7 +15,7 @@
 <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 <script>
 
-d3.request("data/Thailand_provinces_mk.tiff").responseType("arraybuffer").get(function(error, request) {
+d3.request("data/Thailand_provinces_mk-from-gif.tiff").responseType("arraybuffer").get(function(error, request) {
   if (error) throw error;
 
   var tiff = GeoTIFF.parse(request.response),
@@ -28,7 +28,7 @@ d3.request("data/Thailand_provinces_mk.tiff").responseType("arraybuffer").get(fu
       height = +svg.attr("height");
 
   // downsampling values
-  var downsamplingRatio = 10, // must be int
+  var downsamplingRatio = 20, // must be int
       downsamplingWidth = Math.ceil(n / downsamplingRatio);
       downsamplingHeight = Math.ceil(m / downsamplingRatio);
   var values2 = [];
@@ -37,6 +37,7 @@ d3.request("data/Thailand_provinces_mk.tiff").responseType("arraybuffer").get(fu
       values2.push(values[i + n*j]);
     }
   }
+  console.log(d3.extent(values));
 
   var color = d3.scaleOrdinal(["white"].concat(d3.schemePastel2)) //d3.scaleSequential(d3.interpolateMagma)
       .domain(d3.extent(values));
@@ -44,7 +45,7 @@ d3.request("data/Thailand_provinces_mk.tiff").responseType("arraybuffer").get(fu
   var contours = d3.contours()
       .size([downsamplingWidth, downsamplingHeight])
       .smooth(false)
-      .thresholds(100);
+      .thresholds(80);
 
   svg.selectAll("path")
     .data(contours(values2))
