@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<svg width="960" height="673" stroke="#fff" stroke-width="0.5"></svg>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="https://d3js.org/d3-hsv.v0.1.min.js"></script>
+<script src="https://d3js.org/d3-contour.v1.min.js"></script>
+<script>
+
+var svg = d3.select("svg"),
+    width = +svg.attr("width"),
+    height = +svg.attr("height");
+
+d3.json("data/volcano.json", function(error, volcano) {
+  if (error) throw error;
+
+  // downsampling values
+  var downsamplingRatio = 10, // must be int
+      downsamplingWidth = Math.ceil(volcano.width / downsamplingRatio);
+      downsamplingHeight = Math.ceil(volcano.height / downsamplingRatio);
+  var values2 = [];
+  for (var j = 0; j < volcano.height; j += downsamplingRatio) {
+    for (var i = 0; i < volcano.width; i += downsamplingRatio) {
+      values2.push((volcano.values[i + volcano.width*j] > 120)? 1:0);
+    }
+  }
+
+  var color = d3.scaleSequential(d3.interpolateWarm)
+      .domain(d3.extent(values2));
+
+  svg.selectAll("path")
+    .data(d3.contours()
+        .size([downsamplingWidth, downsamplingHeight])
+        .thresholds(2) //(d3.range(90, 195, 5))
+      (values2))
+    .enter().append("path")
+      .attr("d", d3.geoPath(d3.geoIdentity().scale(width / downsamplingWidth)))
+      .attr("fill", function(d) { return color(d.value); });
+});
+
+</script>
