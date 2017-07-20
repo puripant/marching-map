@@ -26,7 +26,7 @@ d3.request("data/Thailand_provinces_mk-color.tiff").responseType("arraybuffer").
   var n = image.getWidth();
 
   // downsampling values
-  var downsamplingRatio = 15; // must be int
+  var downsamplingRatio = 6; // must be int
   var downsamplingWidth = Math.ceil(n / downsamplingRatio);
   var downsamplingHeight = Math.ceil(m / downsamplingRatio);
   var values2 = [];
