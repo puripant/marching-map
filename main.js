@@ -1,16 +1,24 @@
-var svg = d3.select("svg");
-var width = +svg.attr("width");
-var height = +svg.attr("height");
+var width = 280;
+var height = 500;
+d3.selectAll("div")
+  .style("width", width)
+  .style("height", height);
 
-d3.xml("data/Thailand_provinces_mk.svg").mimeType("image/svg+xml").get(function(error, xml) {
+var svg = d3.select("#generated svg")
+  .attr("width", "100%")
+  .attr("height", "100%");
+
+d3.xml("data/thailand-color.svg").mimeType("image/svg+xml").get(function(error, xml) {
   if (error) throw error;
-  document.body.appendChild(xml.documentElement);
-  d3.selectAll("svg")
-    .attr("width", width)
-    .attr("height", height);
+
+  document.getElementById("reference").appendChild(xml.documentElement);
+  d3.select("#reference svg")
+    .attr("width", "100%")
+    .attr("height", "100%")
+    .attr("opacity", 0.3);
 });
 
-d3.request("data/Thailand_provinces_mk-color.tiff").responseType("arraybuffer").get(function(error, request) {
+d3.request("data/thailand-color.tiff").responseType("arraybuffer").get(function(error, request) {
   if (error) throw error;
 
   var tiff = GeoTIFF.parse(request.response);
@@ -26,7 +34,7 @@ d3.request("data/Thailand_provinces_mk-color.tiff").responseType("arraybuffer").
   var n = image.getWidth();
 
   // downsampling values
-  var downsamplingRatio = 6; // must be int
+  var downsamplingRatio = 3 * Math.ceil(n / width); // must be int
   var downsamplingWidth = Math.ceil(n / downsamplingRatio);
   var downsamplingHeight = Math.ceil(m / downsamplingRatio);
   var values2 = [];
@@ -37,7 +45,7 @@ d3.request("data/Thailand_provinces_mk-color.tiff").responseType("arraybuffer").
   }
 
   var color = d3.scaleOrdinal(["white"].concat(d3.schemePastel2)) //d3.scaleSequential(d3.interpolateMagma)
-      .domain(d3.extent(values));
+    .domain(d3.extent(values));
 
   var contours = d3.contours()
       .size([downsamplingWidth, downsamplingHeight])
